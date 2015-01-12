@@ -1,5 +1,6 @@
 package edu.teco.bpart;
 
+import edu.teco.bpart.tsdb.TimeSeriesSender;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -12,10 +13,19 @@ import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 
+
+/**
+ * A service which runs in the background and scans in a certain interval
+ * for bluetooth devices. If a bPart device is found the current lux value is send
+ * to the server.
+ * 
+ * @author philip
+ *
+ */
 public class BleService extends Service {
 
     // Tag for logging.
-    private static final String TAG = "MyService";
+    private static final String TAG = "BleService";
 
     // Handler needed for starting delayed threads.
     private Handler mHandler;
@@ -119,7 +129,13 @@ public class BleService extends Service {
             // bytes[9] to bytes[12] has the Light-Sensor value.
             int lux = java.nio.ByteBuffer.wrap(new byte[]{bytes[12],bytes[11],bytes[10],bytes[9]}).getInt();
             Log.d(TAG, "Light: " + lux + " lux");
-        	
+            
+            String deviceName = bluetoothDevice.getName();
+            
+            // TODO test
+            if (deviceName != null && deviceName.startsWith("bPart")); {
+            	TimeSeriesSender.sendLuxToServer(lux, deviceName);
+            }
 //        	Log.d(TAG, "Bluetooth callback was triggered");
 //        	if (null != bluetoothDevice.getName()) {
 //        		Log.d("BleService", "ble device found. name = " + bluetoothDevice.getName());

@@ -54,7 +54,7 @@ public class MainActivity extends ActionBarActivity {
         private static final String WRITE_URL = "TODO";
         private static final String QUERY_URL = "todo";
         
-        private TSDB tsdb;d 
+        
 
         // UUIDs for bPart Light characteristic, LED characteristic and notification enabling.
         protected static final UUID UPDATE_NOTIFICATION_DESCRIPTOR_UUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
@@ -304,21 +304,5 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void sendLuxToServer(int lux, String deviceId) {
-
-        TimeSeries<Integer> timeSeries = new TimeSeries<Integer>("LUX", deviceId);
-
-        // Add some data points to the time series. Timestamp is current time + x.
-        long currentTime = System.currentTimeMillis() / 1000;
-        timeSeries.addDataPoint(currentTime, lux);
-
-        // Add two tags to the timeseries.
-        // Those key-value pairs can be any string.
-        timeSeries.addTag("Debug", "1");
-        //timeSeries.addTag("SomeOtherTag", "SomeOtherValue");
-
-        // Write all the data to the TSDB.
-        tsdb.write(timeSeries);
-
-    }
+    
 }
