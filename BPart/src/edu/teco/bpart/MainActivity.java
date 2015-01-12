@@ -54,7 +54,7 @@ public class MainActivity extends ActionBarActivity {
         private static final String WRITE_URL = "TODO";
         private static final String QUERY_URL = "todo";
         
-        private TSDB tsdb;
+        private TSDB tsdb;d 
 
         // UUIDs for bPart Light characteristic, LED characteristic and notification enabling.
         protected static final UUID UPDATE_NOTIFICATION_DESCRIPTOR_UUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
