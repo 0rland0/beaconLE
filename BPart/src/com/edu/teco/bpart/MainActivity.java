@@ -36,6 +36,10 @@ public class MainActivity extends ActionBarActivity {
         // App name for logging.
         private static String APP = "Bluetooth Low Energy Demo";
 
+         // URLs for TSDB
+        private final static String WRITE_URL = "http://cumulus.teco.edu:52001/data/";
+        private final static String QUERY_URL = "http://cumulus.teco.edu:4242/api/query";
+
         // Constant for identifying intent request
         private static int ENABLE_BT_ACTION = 0;
 
@@ -44,6 +48,9 @@ public class MainActivity extends ActionBarActivity {
 
         // The bPart itself.
         private BluetoothDevice mbPart;
+
+        // TSDB variable
+        private TSDB tsdb;
 
         // GATT server we connect to.
         private BluetoothGatt mBluetoothGatt;
@@ -83,6 +90,8 @@ public class MainActivity extends ActionBarActivity {
                 Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                 this.startActivityForResult(enableBtIntent, ENABLE_BT_ACTION); // 0 identifies the call.
             }
+            // Create a new TSDB Connection
+            tsdb = new TSDB(WRITE_URL, QUERY_URL);
         }
 
         @Override
