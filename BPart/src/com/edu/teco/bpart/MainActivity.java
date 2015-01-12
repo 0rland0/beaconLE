@@ -22,6 +22,7 @@ import android.view.View;
 import android.widget.SeekBar;
 import android.widget.Toast;
 
+import java.lang.Integer;
 import java.util.List;
 import java.util.UUID;
 
@@ -294,5 +295,23 @@ public class MainActivity extends ActionBarActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void sendLuxToServer(int lux, String deviceId) {
+
+        TimeSeries<Double> timeSeries = new TimeSeries<>("LUX", deviceId);
+
+        // Add some data points to the time series. Timestamp is current time + x.
+        long currentTime = System.currentTimeMillis() / 1000;
+        timeSeries.addDataPoint(currentTime, lux);
+
+        // Add two tags to the timeseries.
+        // Those key-value pairs can be any string.
+        timeSeries.addTag("Debug", "1");
+        //timeSeries.addTag("SomeOtherTag", "SomeOtherValue");
+
+        // Write all the data to the TSDB.
+        tsdb.write(timeSeries);
+
     }
 }
