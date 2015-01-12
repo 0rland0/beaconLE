@@ -1,5 +1,6 @@
 package edu.teco.bpart;
 
+import edu.teco.bpart.gamification.PointTracker;
 import edu.teco.bpart.tsdb.TimeSeriesSender;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
@@ -35,6 +36,8 @@ public class BleService extends Service {
 
     // Indicates whether bluetooth is ready to be used on this device.
     private boolean mBluetoothReady;
+    
+    private static Context mContext;
 
 
     // Gets called by bindService(), which would not start the service.
@@ -48,6 +51,8 @@ public class BleService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
+    	mContext = this;
+    	
         // Make sure the service is only started once.
         if (mHandler == null) {
             // Check if BT is ready.
@@ -135,6 +140,7 @@ public class BleService extends Service {
             // TODO test
             if (deviceName != null && deviceName.startsWith("bPart")); {
             	TimeSeriesSender.sendLuxToServer(lux, deviceName);
+            	PointTracker.luxValueCollected(mContext);
             }
 //        	Log.d(TAG, "Bluetooth callback was triggered");
 //        	if (null != bluetoothDevice.getName()) {

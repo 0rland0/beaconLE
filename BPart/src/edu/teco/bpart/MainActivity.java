@@ -21,12 +21,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.edu.teco.bpart.R;
 
-import edu.teco.bpart.tsdb.TSDB;
-import edu.teco.bpart.tsdb.TimeSeries;
+import edu.teco.bpart.gamification.PointTracker;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -68,6 +68,12 @@ public class MainActivity extends ActionBarActivity {
             setContentView(R.layout.activity_main);
             
             mContext = this;
+            
+            int points = PointTracker.getCurrentPoints(this);
+            
+            // displays the current number of points
+            TextView pointTextView = (TextView) findViewById(R.id.pointTxtView);
+            pointTextView.setText(String.valueOf(points));
             
             // Check for BLE. Quit app if BLE is not supported.
             if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
