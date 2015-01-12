@@ -36,10 +36,6 @@ public class MainActivity extends ActionBarActivity {
         // App name for logging.
         private static String APP = "Bluetooth Low Energy Demo";
 
-         // URLs for TSDB
-        private final static String WRITE_URL = "http://cumulus.teco.edu:52001/data/";
-        private final static String QUERY_URL = "http://cumulus.teco.edu:4242/api/query";
-
         // Constant for identifying intent request
         private static int ENABLE_BT_ACTION = 0;
 
@@ -48,9 +44,6 @@ public class MainActivity extends ActionBarActivity {
 
         // The bPart itself.
         private BluetoothDevice mbPart;
-
-        // TSDB variable
-        private TSDB tsdb;
 
         // GATT server we connect to.
         private BluetoothGatt mBluetoothGatt;
@@ -90,8 +83,6 @@ public class MainActivity extends ActionBarActivity {
                 Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                 this.startActivityForResult(enableBtIntent, ENABLE_BT_ACTION); // 0 identifies the call.
             }
-            // Create a new TSDB Connection
-            tsdb = new TSDB(WRITE_URL, QUERY_URL);
         }
 
         @Override
@@ -147,15 +138,27 @@ public class MainActivity extends ActionBarActivity {
                 String bDeviceName = bluetoothDevice.getName();
                 
                  if (bluetoothDevice.getName().equals("bPart 78:FA:5A")) {
-                	 Toast.makeText(mContext, "Connected with bPart", Toast.LENGTH_LONG).show();
+                	 
                      mbPart = bluetoothDevice;
+                     connectClicked(null);
+                     Toast.makeText(mContext, "Connected with bPart", Toast.LENGTH_LONG).show();
                  }
             }
         };
 
+        
+        public void startServiceClicked(View v) {
+        	startService(new Intent(this, BleService.class));
+        }
+        
+        public void stopServiceClicked(View v) {
+        	stopService(new Intent(this, BleService.class));
+        }
+        
         public void connectClicked(View v) {
         	
-        	BluetoothDevice foo = mbPart;
+        	
+        	
         	
         	if(null != mbPart) {
 	            // Connect to GATT Server
