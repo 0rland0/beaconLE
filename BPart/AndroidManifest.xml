@@ -17,7 +17,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".MainActivity"
+            android:name="edu.teco.bpart.MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -27,7 +27,7 @@
         </activity>
         
         <service
-            android:name=".BleService"
+            android:name="edu.teco.bpart.BleService"
             android:enabled="true"
             android:exported="true" >
         </service>

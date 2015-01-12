@@ -1,4 +1,4 @@
-package com.edu.teco.bpart;
+package edu.teco.bpart;
 
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;

@@ -1,4 +1,4 @@
-package edu.teco.bleconnect.edu.teco.bleconnect.tsdb;
+package edu.teco.bpart.tsdb;
 
 // Author: Vincent Diener  -  diener@teco.edu
 

@@ -1,4 +1,4 @@
-package com.edu.teco.bpart;
+package edu.teco.bpart;
 
 public class MathHelper {
 

@@ -1,3 +1,4 @@
+package edu.teco.bpart;
 //package com.edu.teco.bpart;
 //
 //import android.bluetooth.BluetoothAdapter;
