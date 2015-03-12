@@ -7,5 +7,8 @@
     
     <string name="no_bt_on_device">No Bluetooth on this device.</string>
     <string name="ble_not_supported">\"Bluetooth Low Energy not supported on this device.\"</string>
+    
+    <string name="start_service">Start helping</string>
+    <string name="stop_service">Stop helping</string>
 
 </resources>

@@ -1,8 +1,10 @@
 package edu.teco.bpart.gamification;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.widget.TextView;
 
 /**
  * This class takes care of adding and tracking points.
@@ -15,12 +17,14 @@ import android.preference.PreferenceManager;
  *
  */
 public class PointTracker {
-
+	
 	/** 
 	 * Number of points which a player receives when
-	 * he collects a lux value.
+	 * user collects a lux value.
 	 */
 	private static final int LUX_VALUE_POINTS = 10;
+	
+	private static final String SHARED_PREFS_KEY_FOR_POINTS = "sharedPrefsKeyForPoints";
 	
 	/**
 	 * This method should be called when
@@ -28,7 +32,8 @@ public class PointTracker {
 	 * of the player will increased and saved
 	 * to the shared preferences.
 	 */
-	public static void luxValueCollected(Context context) {		
+	public static void luxValueCollected(Context context) {			
+		
 		int points = getCurrentPoints(context);
 		points += LUX_VALUE_POINTS;
 		saveCurrentPoints(points, context);		
@@ -36,12 +41,11 @@ public class PointTracker {
 	
 	public static int getCurrentPoints(Context context) {
 		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
-		return sharedPrefs.getInt("sharedPrefsKeyForPoints", 0);
+		return sharedPrefs.getInt(SHARED_PREFS_KEY_FOR_POINTS, 0);
 	}
 	
-	public static void saveCurrentPoints(int points, Context context) {
+	private static void saveCurrentPoints(int points, Context context) {
 		SharedPreferences sf = PreferenceManager.getDefaultSharedPreferences(context);
-		sf.edit().putInt("sharedPrefsKeyForPoints", points).commit();
-	}
-		
+		sf.edit().putInt(SHARED_PREFS_KEY_FOR_POINTS, points).commit();
+	}		
 }

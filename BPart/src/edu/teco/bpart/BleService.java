@@ -25,6 +25,8 @@ import android.widget.Toast;
  */
 public class BleService extends Service {
 
+	public static final String BROADCAST_ACTION = "edu.teco.bpart";
+	
     // Tag for logging.
     private static final String TAG = "BleService";
 
@@ -37,6 +39,7 @@ public class BleService extends Service {
     // Indicates whether bluetooth is ready to be used on this device.
     private boolean mBluetoothReady;
     
+    // Reference to the context of the service.
     private static Context mContext;
 
 
@@ -50,7 +53,7 @@ public class BleService extends Service {
     // Gets called when we start the service.
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-
+    	Log.e(TAG, "scanner service started!");
     	mContext = this;
     	
         // Make sure the service is only started once.
@@ -66,7 +69,8 @@ public class BleService extends Service {
             }
         }
 
-        // START_STICKY: Auto-restart service if it dies.
+        // START_STICKY: Auto-restart service if it dies (e.g. if it is killed by
+        // the OS due to lack of enough memory.
         // This mode makes sense for things that will be explicitly started and stopped to run
         // for arbitrary periods of time, such as a service performing background music playback.
         // If you want the service to stay dead, use START_NOT_STICKY.
@@ -97,8 +101,7 @@ public class BleService extends Service {
     }
 
     // Start BLE scan
-    // Then make sure it gets stopped in 10 seconds.
-    // Then make sure it gets started again in 30 seconds.
+    // Scan for 10 seconds and pause then for 30 seconds
     private Runnable startScan = new Runnable()
     {
         public void run()
@@ -110,6 +113,7 @@ public class BleService extends Service {
             mHandler.postDelayed(startScan, 30 * 1000);
         }
     };
+    
     private Runnable stopScan = new Runnable()
     {
         public void run()
@@ -119,11 +123,10 @@ public class BleService extends Service {
     };
 
 
-    // Device discovered.
+    // Callback which is triggered when a LE device was found
     private BluetoothAdapter.LeScanCallback mBtLeScanCallback = new BluetoothAdapter.LeScanCallback() {
         @Override
         public void onLeScan(BluetoothDevice bluetoothDevice, int rssi, byte[] bytes) {
-//            customToast("Bluetooth Low Energy device \"" + bluetoothDevice.getName() + "\" found.");
         	
         	
             // Device discovered. Print info.
@@ -137,38 +140,20 @@ public class BleService extends Service {
             
             String deviceName = bluetoothDevice.getName();
             
-            // TODO test
-            if (deviceName != null && deviceName.startsWith("bPart")); {
-            	TimeSeriesSender.sendLuxToServer(lux, deviceName);
+            if (deviceName != null && deviceName.startsWith("bPart")) {
+            	
+            	// not working yet
+//            	TimeSeriesSender.sendLuxToServer(lux, deviceName);
             	PointTracker.luxValueCollected(mContext);
+            	 Intent broadcast = new Intent();
+                 broadcast.setAction(BROADCAST_ACTION);
+                 broadcast.putExtra("lux", lux);
+                 sendBroadcast(broadcast);
             }
-//        	Log.d(TAG, "Bluetooth callback was triggered");
-//        	if (null != bluetoothDevice.getName()) {
-//        		Log.d("BleService", "ble device found. name = " + bluetoothDevice.getName());
-//        	}
+
         }
     };
 
-//    // Starts custom toast as defined in toast_layout.xml
-//    private void customToast(final String textString) {
-//        Runnable r = new Runnable() {
-//            @Override
-//            public void run() {
-//                LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-//                View layout = inflater.inflate(R.layout.toast_layout, null);
-//
-//                TextView text = (TextView) layout.findViewById(R.id.text);
-//                text.setText(textString);
-//
-//                Toast toast = new Toast(getApplicationContext());
-//                toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
-//                toast.setDuration(Toast.LENGTH_LONG);
-//                toast.setView(layout);
-//                toast.show();
-//            }
-//        };
-//        mHandler.post(r);
-//    }
 
     // When service dies, stop all threads and scans.
     @Override
