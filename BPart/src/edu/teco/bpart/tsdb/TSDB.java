@@ -3,7 +3,6 @@ package edu.teco.bpart.tsdb;
 // Author: Vincent Diener  -  diener@teco.edu
 
 import android.os.AsyncTask;
-import android.util.JsonReader;
 import android.util.Log;
 
 import org.apache.http.HttpResponse;
@@ -37,10 +36,13 @@ public class TSDB {
     // The URL for querying data from the TSDB
     private String mQueryURL;
 
+    // TAG for logger
     private final static String TAG = "TSDB";
+
 
     /**
      * Creates the TSDB.
+     *
      * @param writeURL The base URL for writing data.
      * @param queryURL The base URL for querying data.
      */
@@ -51,6 +53,7 @@ public class TSDB {
 
     /**
      * Write all data points from time series to TSDB.
+     *
      * @param timeSeries The time series to write.
      */
     public void write(TimeSeries timeSeries) {
@@ -61,6 +64,7 @@ public class TSDB {
 
     /**
      * Query the TSDB with the given query.
+     *
      * @param query The query.
      */
     public void query(Query query) {
@@ -103,7 +107,6 @@ public class TSDB {
 
         private String putJsonAndGetResult(TimeSeries ts, DataPoint dp) {
 
-
             String result = "";
             HttpClient httpclient = new DefaultHttpClient();
             InputStream inputStream = null;
@@ -135,7 +138,7 @@ public class TSDB {
                 Map mp = ts.getTags();
                 Iterator it = mp.entrySet().iterator();
                 while (it.hasNext()) {
-                    Map.Entry pairs = (Map.Entry)it.next();
+                    Map.Entry pairs = (Map.Entry) it.next();
                     tags.put(pairs.getKey().toString(), pairs.getValue().toString());
                 }
 
@@ -168,7 +171,7 @@ public class TSDB {
                 HttpResponse httpResponse = httpclient.execute(httpPUT);
                 inputStream = httpResponse.getEntity().getContent();
 
-                if(inputStream != null) {
+                if (inputStream != null) {
                     result = convertStreamToString(inputStream);
                 } else {
                     result = "Exception while writing.";
@@ -201,7 +204,7 @@ public class TSDB {
         protected void onPostExecute(String result) {
             try {
                 JSONObject response = new JSONObject(result);
-            }catch (JSONException ex) {
+            } catch (JSONException ex) {
                 Log.d(TSDB.TAG, ex.getMessage());
             }
             Log.d(TSDB.TAG, "Query result: " + result);
@@ -241,7 +244,7 @@ public class TSDB {
                     URL += URLEncoder.encode(",", "UTF8");
 
                 while (it.hasNext()) {
-                    Map.Entry pairs = (Map.Entry)it.next();
+                    Map.Entry pairs = (Map.Entry) it.next();
                     URL += URLEncoder.encode(pairs.getKey().toString() + "=" + pairs.getValue().toString(), "UTF8");
                     if (it.hasNext())
                         URL += URLEncoder.encode(",", "UTF8");
@@ -262,7 +265,7 @@ public class TSDB {
                 HttpResponse httpResponse = httpclient.execute(httpGET);
                 inputStream = httpResponse.getEntity().getContent();
 
-                if(inputStream != null) {
+                if (inputStream != null) {
                     result = convertStreamToString(inputStream);
                 } else {
                     result = "Exception while writing.";
@@ -300,5 +303,4 @@ public class TSDB {
         }
         return sb.toString();
     }
-
 }

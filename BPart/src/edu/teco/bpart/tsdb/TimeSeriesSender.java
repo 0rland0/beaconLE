@@ -1,20 +1,21 @@
 package edu.teco.bpart.tsdb;
 
+import android.util.Log;
+
 /**
- * 
  * This class sends time series to the server.
- * 
- * @author orlando
  *
+ * @author orlando
  */
 public class TimeSeriesSender {
-	
-	private static TSDB tsdb;
 
-	// TODO @flo please comment the parameters and test this method
-	public static void sendLuxToServer(int lux, String deviceName) {
+    private static TSDB tsdb = new TSDB("http://cumulus.teco.edu:52001/data/", "");
 
-        TimeSeries<Integer> timeSeries = new TimeSeries<Integer>("LUX", deviceName);
+    private final static String TAG = "TimeSeriesSender";
+
+    public static void sendLuxToServer(int lux, String deviceName, double latitude, double longitude) {
+
+        TimeSeries<Integer> timeSeries = new TimeSeries<Integer>("mociot.light", deviceName);
 
         // Add some data points to the time series. Timestamp is current time + x.
         long currentTime = System.currentTimeMillis() / 1000;
@@ -22,12 +23,16 @@ public class TimeSeriesSender {
 
         // Add two tags to the timeseries.
         // Those key-value pairs can be any string.
-        timeSeries.addTag("Debug", "1");
-        //timeSeries.addTag("SomeOtherTag", "SomeOtherValue");
+        if (latitude > 0 && longitude > 0) {
+            timeSeries.addTag("lat", String.valueOf(latitude));
+            timeSeries.addTag("long", String.valueOf(longitude));
+        }
 
         // Write all the data to the TSDB.
-        tsdb.write(timeSeries);
-
+        try {
+            tsdb.write(timeSeries);
+        } catch (Exception e) {
+            Log.e(TAG, "Could not send data to Server.");
+        }
     }
-	
 }
