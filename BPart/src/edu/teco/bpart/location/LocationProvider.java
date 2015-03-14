@@ -1,7 +1,9 @@
 package edu.teco.bpart.location;
 
 /**
+ * This class manages infomation about the location of the user.
  * Created by Florian on 13.03.15.
+ *
  */
 
 import android.content.Context;
@@ -16,20 +18,28 @@ public class LocationProvider {
 
     // Always keep best location or null
     private Location mLocation;
+
     // Need LocationManager to register Listener
     private LocationManager mLocationManager;
+
     // Listener, which gets called on new Location
     private LocationListener mLocationListener;
 
+    // Logger Tag
     private static final String TAG = "LocationProvider";
 
     // Maximal valid time difference between two location timestamps
     private static final long MAX_DIFF = 2000;
 
-    public LocationProvider(Context context) {
-        mLocationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+    public LocationProvider(Context pContext) {
+        mLocationManager = (LocationManager) pContext.getSystemService(Context.LOCATION_SERVICE);
     }
 
+    /**
+     * Returns current Latitude or -1.
+     *
+     * @return
+     */
     public double getLatitude() {
         if (mLocation != null) {
             return mLocation.getLatitude();
@@ -38,6 +48,11 @@ public class LocationProvider {
         }
     }
 
+    /**
+     * Returns current longitude or -1.
+     *
+     * @return
+     */
     public double getLongitude() {
         if (mLocation != null) {
             return mLocation.getLongitude();
@@ -46,12 +61,18 @@ public class LocationProvider {
         }
     }
 
+    /**
+     * Start listening for location updates.
+     */
     public void startListening() {
         mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this.getLocationListener());
         mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this.getLocationListener());
         Log.d(TAG, "Started listening for LocationUpdates");
     }
 
+    /**
+     * Stop listening for location updates.
+     */
     public void stopListening() {
         if (mLocationListener != null) {
             mLocationManager.removeUpdates(mLocationListener);
@@ -65,14 +86,14 @@ public class LocationProvider {
         } else {
             LocationListener locationListener = new LocationListener() {
                 // Called when a new location is found by the location provider.
-                public void onLocationChanged(Location location) {
+                public void onLocationChanged(Location pLocation) {
                     if (mLocation == null) {
-                        mLocation = location;
+                        mLocation = pLocation;
                         Log.d(TAG, "Set new location to: " + mLocation.toString());
                     } else {
-                        long diff = location.getTime() - mLocation.getTime();
-                        if (diff > MAX_DIFF || mLocation.getAccuracy() > location.getAccuracy()) {
-                            mLocation = location;
+                        long diff = pLocation.getTime() - mLocation.getTime();
+                        if (diff > MAX_DIFF || mLocation.getAccuracy() > pLocation.getAccuracy()) {
+                            mLocation = pLocation;
                             Log.d(TAG, "Set new location to: " + mLocation.toString());
                         }
                     }

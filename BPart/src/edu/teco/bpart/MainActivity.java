@@ -32,7 +32,8 @@ public class MainActivity extends ActionBarActivity {
     // Constant for identifying intent request
     private static int ENABLE_BT_ACTION = 0;
 
-    private int scanBreakMultiplier = 5;
+    // Default scan break multiplier
+    private int mScanBreakMultiplier = 5;
 
     // The bluetooth adapter on the device.
     private BluetoothAdapter mBluetoothAdapter;
@@ -41,7 +42,10 @@ public class MainActivity extends ActionBarActivity {
     private static Button mServiceButton;
     private static SeekBar mTimesliceSeekBar;
 
+    private final static String SHARED_PREFS_KEY_FOR_SCAN = "sharedPrefsKeyForScanBreakMultiplier";
+    // Positiv color of the start button
     private final static int POSITIV_COLOR = Color.rgb(101, 155, 94);
+    // Negativ color of the stop button
     private final static int NEGATIV_COLOR = Color.rgb(168, 93, 93);
 
 
@@ -49,7 +53,7 @@ public class MainActivity extends ActionBarActivity {
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            updatePointDisplay();
+            updateView();
 
             if (mContext != null) {
                 Toast.makeText(mContext,
@@ -58,7 +62,6 @@ public class MainActivity extends ActionBarActivity {
             }
         }
     };
-    private int scanAccuracy;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,7 +81,7 @@ public class MainActivity extends ActionBarActivity {
         }
 
         // displays the current number of points
-        updatePointDisplay();
+        updateView();
 
         // Check for BLE. Quit app if BLE is not supported.
         if (!getPackageManager().hasSystemFeature(
@@ -116,7 +119,7 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (fromUser) {
-                    scanBreakMultiplier = (100 - progress) / 10;
+                    mScanBreakMultiplier = progress;
                 }
             }
 
@@ -130,18 +133,6 @@ public class MainActivity extends ActionBarActivity {
 
             }
         });
-        mTimesliceSeekBar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!mTimesliceSeekBar.isEnabled()) {
-                    Toast.makeText(getApplicationContext(),
-                            "Please stop scanning, before you change this.", Toast.LENGTH_SHORT)
-                            .show();
-                }
-            }
-        });
-
-
     }
 
     private void displayBleServiceIsAlreadyRunningUI() {
@@ -159,26 +150,26 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
         IntentFilter filter = new IntentFilter();
         filter.addAction(BleService.BROADCAST_ACTION);
         registerReceiver(receiver, filter);
-
+        mScanBreakMultiplier = PreferencesHelper.getIntPrefForKey(SHARED_PREFS_KEY_FOR_SCAN, mContext);
         // updates points if necessary
-        updatePointDisplay();
+        updateView();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-
+        PreferencesHelper.setIntPrefForKey(SHARED_PREFS_KEY_FOR_SCAN, mScanBreakMultiplier, mContext);
         unregisterReceiver(receiver);
     }
 
     // Update Point View to actually value
-    private void updatePointDisplay() {
+    private void updateView() {
         int points = PointTracker.getCurrentPoints(this);
         mPointTextView.setText(String.valueOf(points));
+        mTimesliceSeekBar.setProgress(mScanBreakMultiplier);
     }
 
     @Override
@@ -197,6 +188,11 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
+    /**
+     * Callback for button.
+     *
+     * @param v
+     */
     public void serviceBtnClicked(View v) {
         boolean bleScanServiceIsRunning = checkIfServiceIsRunning(BleService.class);
         Intent newIntent = new Intent(this, BleService.class);
@@ -204,7 +200,7 @@ public class MainActivity extends ActionBarActivity {
             stopService(new Intent(this, BleService.class));
             displayBleServiceIsNotRunningUI();
         } else {
-            newIntent.putExtra("SCAN_BREAK_MULTIPLIER", scanBreakMultiplier);
+            newIntent.putExtra("SCAN_BREAK_MULTIPLIER", mScanBreakMultiplier);
             startService(newIntent);
             displayBleServiceIsAlreadyRunningUI();
         }

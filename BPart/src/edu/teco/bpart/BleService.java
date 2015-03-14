@@ -14,7 +14,7 @@ import android.widget.Toast;
 
 import edu.teco.bpart.gamification.PointTracker;
 import edu.teco.bpart.location.LocationProvider;
-import edu.teco.bpart.tsdb.TimeSeriesSender;
+import edu.teco.bpart.tsdb.connection.TimeSeriesSender;
 
 
 /**
@@ -26,7 +26,10 @@ import edu.teco.bpart.tsdb.TimeSeriesSender;
  */
 public class BleService extends Service {
 
+
     public static final String BROADCAST_ACTION = "edu.teco.bpart";
+    // Shared key to accces scan break multiplier.
+    private final static String SHARED_PREFS_KEY_FOR_SCAN = "sharedPrefsKeyForScanBreakMultiplier";
 
     // Tag for logging.
     private static final String TAG = "BleService";
@@ -39,6 +42,9 @@ public class BleService extends Service {
 
     // LocationProvider return location of person
     private LocationProvider mLocationProvider;
+
+    // Sender for new time series.
+    private TimeSeriesSender mSender;
 
     // Indicates whether bluetooth is ready to be used on this device.
     private boolean mBluetoothReady;
@@ -72,11 +78,13 @@ public class BleService extends Service {
         }
         mLocationProvider.startListening();
         if (intent != null) {
-            SCAN_BREAK_MULTIPLIER = intent.getIntExtra("SCAN_BREAK_MULTIPLIER", 5);
+            SCAN_BREAK_MULTIPLIER = (100 - intent.getIntExtra("SCAN_BREAK_PROGRESS", 50)) / 10;
         } else {
-            SCAN_BREAK_MULTIPLIER = 5;
+            SCAN_BREAK_MULTIPLIER = (100 - PreferencesHelper.getIntPrefForKey(SHARED_PREFS_KEY_FOR_SCAN, mContext)) / 10;
         }
-
+        if (mSender == null) {
+            mSender = new TimeSeriesSender(mContext);
+        }
         // Make sure the service is only started once.
         if (mHandler == null) {
             // Check if BT is ready.
@@ -135,7 +143,7 @@ public class BleService extends Service {
 
         }
     };
-
+    // Stop scanning for bparts.
     private Runnable stopScan = new Runnable() {
         public void run() {
             mBluetoothAdapter.stopLeScan(mBtLeScanCallback);
@@ -159,7 +167,7 @@ public class BleService extends Service {
             String deviceName = bluetoothDevice.getName();
 
             if (deviceName != null && deviceName.startsWith("bPart")) {
-                TimeSeriesSender.sendLuxToServer(lux, normalizeDeviceName(deviceName), mLocationProvider.getLatitude(), mLocationProvider.getLongitude());
+                mSender.sendLuxToServer(lux, normalizeDeviceName(deviceName), mLocationProvider.getLatitude(), mLocationProvider.getLongitude());
                 PointTracker.luxValueCollected(mContext);
                 Intent broadcast = new Intent();
                 broadcast.setAction(BROADCAST_ACTION);
@@ -170,6 +178,7 @@ public class BleService extends Service {
         }
     };
 
+    // Normalize name of Device, so that it's handy.
     private String normalizeDeviceName(String oldName) {
         return oldName.toLowerCase().replaceAll("\\s", "").replace(":", "");
     }
@@ -183,6 +192,7 @@ public class BleService extends Service {
         mHandler.removeCallbacks(stopScan);
         mHandler.removeCallbacks(startScan);
         mLocationProvider.stopListening();
+        mSender.unregisterIntents();
         mBluetoothAdapter.stopLeScan(mBtLeScanCallback);
     }
 
