@@ -57,7 +57,7 @@ public class MainActivity extends ActionBarActivity {
 
             if (mContext != null) {
                 Toast.makeText(mContext,
-                        "Congrats, you collected a lux value!",
+                        R.string.congrats_lux,
                         Toast.LENGTH_LONG).show();
             }
         }
@@ -86,7 +86,7 @@ public class MainActivity extends ActionBarActivity {
         // Check for BLE. Quit app if BLE is not supported.
         if (!getPackageManager().hasSystemFeature(
                 PackageManager.FEATURE_BLUETOOTH_LE)) {
-            Toast.makeText(this, getString(R.string.ble_not_supported),
+            Toast.makeText(this, R.string.ble_not_supported,
                     Toast.LENGTH_SHORT).show();
             finish();
         }
@@ -99,7 +99,7 @@ public class MainActivity extends ActionBarActivity {
         // Quit if bluetooth is not available on the device.
         if (mBluetoothAdapter == null) {
             Toast.makeText(getApplicationContext(),
-                    getString(R.string.no_bt_on_device), Toast.LENGTH_SHORT)
+                    R.string.no_bt_on_device, Toast.LENGTH_SHORT)
                     .show();
             finish();
         }
@@ -138,13 +138,13 @@ public class MainActivity extends ActionBarActivity {
     private void displayBleServiceIsAlreadyRunningUI() {
         mTimesliceSeekBar.setEnabled(false);
         mServiceButton.setBackgroundColor(NEGATIV_COLOR);
-        mServiceButton.setText(R.string.stop_service);
+        mServiceButton.setText(R.string.stop_helping);
     }
 
     private void displayBleServiceIsNotRunningUI() {
         mTimesliceSeekBar.setEnabled(true);
         mServiceButton.setBackgroundColor(POSITIV_COLOR);
-        mServiceButton.setText(R.string.start_service);
+        mServiceButton.setText(R.string.start_helping);
     }
 
     @Override
@@ -174,16 +174,15 @@ public class MainActivity extends ActionBarActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
         // The user has returned from the Enable-BT-Intent. Check the result.
         if (requestCode == ENABLE_BT_ACTION && resultCode == RESULT_OK) {
             Toast.makeText(getApplicationContext(),
-                    "Thank you for activating Bluetooth.", Toast.LENGTH_SHORT)
+                    R.string.activated_bluetooth, Toast.LENGTH_SHORT)
                     .show();
         } else if (requestCode == ENABLE_BT_ACTION
                 && resultCode == RESULT_CANCELED) {
             Toast.makeText(getApplicationContext(),
-                    "You did not activate Bluetooth. =(", Toast.LENGTH_SHORT)
+                    R.string.not_activated, Toast.LENGTH_SHORT)
                     .show();
         }
     }

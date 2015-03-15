@@ -12,6 +12,8 @@ import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.edu.teco.bpart.R;
+
 import edu.teco.bpart.gamification.PointTracker;
 import edu.teco.bpart.location.LocationProvider;
 import edu.teco.bpart.tsdb.connection.TimeSeriesSender;
@@ -70,7 +72,7 @@ public class BleService extends Service {
     // Gets called when we start the service.
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.e(TAG, "scanner service started!");
+        Log.e(TAG, "Starting scanner service.");
         mContext = this;
 
         if (mLocationProvider == null) {
@@ -90,7 +92,7 @@ public class BleService extends Service {
             // Check if BT is ready.
             prepareBluetooth();
             if (mBluetoothReady) {
-                Toast.makeText(this, "BLE scanner service started.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.service_started, Toast.LENGTH_SHORT).show();
 
                 // Wait a bit, then start scan.
                 mHandler = new Handler();
@@ -111,7 +113,7 @@ public class BleService extends Service {
         mBluetoothReady = true;
 
         if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
-            Toast.makeText(getApplicationContext(), "The system has no support for bluetooth LE.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), R.string.ble_not_supported, Toast.LENGTH_SHORT).show();
             mBluetoothReady = false;
         }
 
@@ -119,12 +121,12 @@ public class BleService extends Service {
         mBluetoothAdapter = manager.getAdapter();
 
         if (mBluetoothAdapter == null) {
-            Toast.makeText(getApplicationContext(), "This device has no bluetooth hardware.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), R.string.no_bt_on_device, Toast.LENGTH_SHORT).show();
             mBluetoothReady = false;
         }
 
         if (!mBluetoothAdapter.isEnabled()) {
-            Toast.makeText(getApplicationContext(), "Bluetooth not enabled.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), R.string.bluetooth_not_enabled, Toast.LENGTH_SHORT).show();
             mBluetoothReady = false;
         }
     }
@@ -183,12 +185,10 @@ public class BleService extends Service {
         return oldName.toLowerCase().replaceAll("\\s", "").replace(":", "");
     }
 
-    ;
-
     // When service dies, stop all threads and scans.
     @Override
     public void onDestroy() {
-        Toast.makeText(this, "BLE scanner service stopped.", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, R.string.service_stopped, Toast.LENGTH_SHORT).show();
         mHandler.removeCallbacks(stopScan);
         mHandler.removeCallbacks(startScan);
         mLocationProvider.stopListening();

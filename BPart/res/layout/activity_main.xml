@@ -21,7 +21,7 @@
         android:layout_marginRight="10dp"
         android:textSize="20sp"
         android:textColor="#FFF"
-        android:text="Make Karlsruhe to a smarter city!\n Start collecting valuable data from sensors around you"
+        android:text="@string/introduction"
         android:id="@+id/information" />
 
     <TextView
@@ -31,7 +31,7 @@
         android:textColor="#ffffffff"
         android:textSize="15dp"
         android:layout_marginTop="10dp"
-        android:text="Slide to the right and collect more points, but your device will need more power."
+        android:text="@string/seekbar_title"
         android:textAlignment="center"
         android:gravity="center_horizontal" />
 
@@ -59,10 +59,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="20sp"
-        android:text="points"
         android:textColor="#B29F52"
         android:layout_gravity="center_horizontal|center_vertical"
-        android:layout_marginBottom="15dp" />
+        android:layout_marginBottom="15dp"
+        android:text="@string/points" />
 
     <Button
         android:layout_marginTop="15dp"
@@ -70,7 +70,7 @@
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:layout_height="wrap_content"
-        android:text="Start helping"
+        android:text="@string/start_helping"
         android:id="@+id/btn_service"
         android:background="#659B5E"
         android:textColor="#FFF"
