@@ -28,8 +28,11 @@ public class LocationProvider {
     // Logger Tag
     private static final String TAG = "LocationProvider";
 
-    // Maximal valid time difference between two location timestamps
-    private static final long MAX_DIFF = 2000;
+    // Maximal valid time difference between two locations
+    private static final long MAX_TIME = 2000;
+
+    // Maximal valid distance between locations
+    private static final int MAX_METERS = 10;
 
     public LocationProvider(Context pContext) {
         mLocationManager = (LocationManager) pContext.getSystemService(Context.LOCATION_SERVICE);
@@ -44,7 +47,7 @@ public class LocationProvider {
         if (mLocation != null) {
             return mLocation.getLatitude();
         } else {
-            return -1.0;
+            return -181.0;
         }
     }
 
@@ -57,7 +60,7 @@ public class LocationProvider {
         if (mLocation != null) {
             return mLocation.getLongitude();
         } else {
-            return -1.0;
+            return -181.0;
         }
     }
 
@@ -65,9 +68,19 @@ public class LocationProvider {
      * Start listening for location updates.
      */
     public void startListening() {
-        mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this.getLocationListener());
-        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this.getLocationListener());
-        Log.d(TAG, "Started listening for LocationUpdates");
+        try {
+            if (mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+                mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MAX_TIME, MAX_METERS, this.getLocationListener());
+            }
+            if (mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MAX_TIME, MAX_METERS, this.getLocationListener());
+            }
+            Log.d(TAG, "Started listening for LocationUpdates");
+        } catch (SecurityException ex) {
+            Log.e(TAG, "Don't have the permissions to access this resource.");
+        } catch (RuntimeException ex) {
+            Log.e(TAG, "This context is missing a looper.");
+        }
     }
 
     /**
@@ -92,7 +105,7 @@ public class LocationProvider {
                         Log.d(TAG, "Set new location to: " + mLocation.toString());
                     } else {
                         long diff = pLocation.getTime() - mLocation.getTime();
-                        if (diff > MAX_DIFF || mLocation.getAccuracy() > pLocation.getAccuracy()) {
+                        if (diff > MAX_TIME || mLocation.getAccuracy() > pLocation.getAccuracy()) {
                             mLocation = pLocation;
                             Log.d(TAG, "Set new location to: " + mLocation.toString());
                         }

@@ -169,8 +169,15 @@ public class BleService extends Service {
             String deviceName = bluetoothDevice.getName();
 
             if (deviceName != null && deviceName.startsWith("bPart")) {
-                mSender.sendLuxToServer(lux, normalizeDeviceName(deviceName), mLocationProvider.getLatitude(), mLocationProvider.getLongitude());
+                double lat = mLocationProvider.getLatitude();
+                double llong = mLocationProvider.getLongitude();
+                if (lat >= -180.0 && llong >= -180.0) {
+                    mSender.sendLuxToServer(lux, normalizeDeviceName(deviceName), lat, llong);
+                } else {
+                    mSender.sendLuxToServer(lux, normalizeDeviceName(deviceName));
+                }
                 PointTracker.luxValueCollected(mContext);
+
                 Intent broadcast = new Intent();
                 broadcast.setAction(BROADCAST_ACTION);
                 broadcast.putExtra("lux", lux);

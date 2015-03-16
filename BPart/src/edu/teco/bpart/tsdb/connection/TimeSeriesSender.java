@@ -47,6 +47,14 @@ public class TimeSeriesSender {
     }
 
     /**
+     * @param pLux
+     * @param pDeviceName
+     */
+    public void sendLuxToServer(int pLux, String pDeviceName) {
+        this.sendLuxToServer(pLux, pDeviceName, -181.0, -181.0);
+    }
+
+    /**
      * Create a new time series object and queue it.
      *
      * @param pLux
@@ -64,7 +72,7 @@ public class TimeSeriesSender {
 
         // Add two tags to the timeseries.
         // Those key-value pairs can be any string.
-        if (pLatitude > 0 && pLongitude > 0) {
+        if (pLatitude >= -180.0 && pLongitude >= -180.0) {
             timeSeries.addTag("lat", pLatitude);
             timeSeries.addTag("long", pLongitude);
         }
